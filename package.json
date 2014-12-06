@@ -1,0 +1,41 @@
+{
+  "name": "datmtn",
+  "version": "1.0.0",
+  "description": "Such Mountain",
+  "main": "index.js",
+  "dependencies": {
+    "bl": "^0.9.3",
+    "concat-frames": "^1.0.1",
+    "concat-stream": "^1.4.7",
+    "ecstatic": "^0.5.7",
+    "canvas": "^1.1.6",
+    "glob-stream": "^3.1.18",
+    "peeq": "^1.0.0",
+    "readable-stream": "^1.0.33",
+    "gif-stream": "^1.0.1",
+    "resizer-stream": "^1.0.1",
+    "through2": "^0.6.3",
+    "trumpet": "^1.7.0",
+    "neuquant": "^1.0.2",
+    "jpg-stream": "^1.0.2",
+    "exif-parser": "^0.1.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshgillies/datmt.git"
+  },
+  "keywords": [
+    "mountains"
+  ],
+  "author": "Josh Gillies <npm@joshgilli.es> (http://joshgilli.es/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joshgillies/datmt/issues"
+  },
+  "homepage": "https://github.com/joshgillies/datmt"
+}
