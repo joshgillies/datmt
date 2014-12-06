@@ -6,9 +6,7 @@
   "dependencies": {
     "bl": "^0.9.3",
     "concat-frames": "^1.0.1",
-    "concat-stream": "^1.4.7",
     "ecstatic": "^0.5.7",
-    "canvas": "^1.1.6",
     "glob-stream": "^3.1.18",
     "peeq": "^1.0.0",
     "readable-stream": "^1.0.33",
@@ -17,8 +15,7 @@
     "through2": "^0.6.3",
     "trumpet": "^1.7.0",
     "neuquant": "^1.0.2",
-    "jpg-stream": "^1.0.2",
-    "exif-parser": "^0.1.7"
+    "jpg-stream": "^1.0.2"
   },
   "devDependencies": {},
   "scripts": {
