@@ -27,7 +27,7 @@ var writeFile = function writeFile(path, callback) {
   return ws;
 };
 
-var resource = Peeq('http://www.rosebay.tased.edu.au/webcam/large.jpg', 1000);
+var resource = Peeq('http://www.rosebay.tased.edu.au/webcam/large.jpg', 60000);
 
 resource.on('response', function(res) {
   var lastModified = new Date(res.headers['last-modified']);
