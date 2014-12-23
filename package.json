@@ -1,26 +1,27 @@
 {
-  "name": "datmtn",
+  "name": "datmt",
   "version": "1.0.0",
   "description": "Such Mountain",
-  "main": "index.js",
+  "main": "app/index.js",
   "dependencies": {
     "bl": "^0.9.3",
     "concat-frames": "^1.0.1",
     "ecstatic": "^0.5.7",
-    "glob-stream": "^3.1.18",
-    "peeq": "^1.0.0",
-    "readable-stream": "^1.0.33",
     "gif-stream": "^1.0.1",
+    "glob-stream": "^3.1.18",
+    "jpg-stream": "^1.0.2",
+    "neuquant": "^1.0.2",
+    "peeq": "^1.0.0",
+    "rc": "^0.5.4",
+    "readable-stream": "^1.0.33",
     "resizer-stream": "^1.0.1",
     "through2": "^0.6.3",
-    "trumpet": "^1.7.0",
-    "neuquant": "^1.0.2",
-    "jpg-stream": "^1.0.2"
+    "trumpet": "^1.7.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node app/index.js"
   },
   "repository": {
     "type": "git",

@@ -9,6 +9,7 @@ var through2 = require('through2');
 var resize = require('resizer-stream');
 var bl = require('bl');
 var PassThrough = require('readable-stream').PassThrough;
+var config = require('config');
 
 var writeFile = function writeFile(path, callback) {
   if (!callback) {
@@ -27,7 +28,7 @@ var writeFile = function writeFile(path, callback) {
   return ws;
 };
 
-var resource = Peeq('http://www.rosebay.tased.edu.au/webcam/large.jpg', 60000);
+var resource = Peeq(config.mtURL, 60000);
 
 resource.on('response', function(res) {
   var lastModified = new Date(res.headers['last-modified']);
@@ -51,7 +52,7 @@ resource.on('response', function(res) {
           '/>'
         ].join(' '));
         htmlStream.resume();
-        tr.pipe(fs.createWriteStream('./public/index.html'));
+        tr.pipe(fs.createWriteStream(__dirname + '/assets/index.html'));
       }
     };
 
@@ -61,7 +62,7 @@ resource.on('response', function(res) {
     imageStream
       .pipe(resize({ width: width / 2, height: height / 2, fit: true }))
       .pipe(new JPEGEncoder({ quality: 70 }))
-      .pipe(writeFile('./public/images/' + timeStamp + '--medium.jpg', done));
+      .pipe(writeFile(__dirname + '/assets/images/' + timeStamp + '--medium.jpg', done));
 
     imageStream
       .pipe(resize({ width: width / 4, height: height / 4, fit: true }))
@@ -82,7 +83,7 @@ resource.on('response', function(res) {
           cb();
         }
       ))
-      .pipe(writeFile('./public/images/' + timeStamp + '--small.jpg', done));
+      .pipe(writeFile(__dirname + '/assets/images/' + timeStamp + '--small.jpg', done));
 
     imageStream.emit('format', {
       width: width,
@@ -92,18 +93,18 @@ resource.on('response', function(res) {
     imageStream.end(pixels);
   };
 
-  var htmlStream = fs.createReadStream('./html/index.html');
+  var htmlStream = fs.createReadStream(__dirname + '/assets/html/index.html');
 
   htmlStream.pause();
   htmlStream.pipe(tr);
 
   res
-    .pipe(fs.createWriteStream('./public/images/' + timeStamp + '.jpg'));
+    .pipe(fs.createWriteStream(__dirname + '/assets/images/' + timeStamp + '.jpg'));
 
   res
     .pipe(new JPEGDecoder)
     .pipe(new JPEGEncoder({ quality: 70 }))
-    .pipe(fs.createWriteStream('./public/images/' + timeStamp + '--large.jpg'));
+    .pipe(fs.createWriteStream(__dirname + '/assets/images/' + timeStamp + '--large.jpg'));
 
   res
     .pipe(new JPEGDecoder)
@@ -114,4 +115,7 @@ resource.on('error', function(err) {
   console.log(err);
 });
 
-server.listen(9000);
+server.listen(config.port, config.host, function() {
+  var info = server.address();
+  console.log('Server running at "%s:%d"', info.address, info.port);
+});

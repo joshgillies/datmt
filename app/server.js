@@ -1,7 +1,7 @@
 var http = require('http');
 var ecstatic = require('ecstatic')({
-  root: __dirname + '/public',
-  showDir: true,
+  root: __dirname + '/assets',
+  showDir: false,
   autoIndex: true
 });
 
