@@ -4,7 +4,7 @@ Mt. Wellington as a service.
 
 ## Description
 
-`datmt` makes use of http:/http://www.rosebay.tased.edu.au/Camera.html and as a
+`datmt` makes use of http://www.rosebay.tased.edu.au/Camera.htm and as a
 result offers a near real-time view of Mt. Wellington.
 
 By way of generating permalinks to snapshots of the mountatin `datmt` pays special
@@ -16,3 +16,11 @@ giant.
 Working, but far from complete.
 
 ![screenshot](/docs/screenshot1.png)
+
+# Copyright
+
+All image data Copyright Rose Bay High School.
+
+# License
+
+MIT
