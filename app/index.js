@@ -10,6 +10,8 @@ var resize = require('resizer-stream');
 var bl = require('bl');
 var PassThrough = require('readable-stream').PassThrough;
 var config = require('config');
+var AWS = !config.aws || require('./aws');
+var db = require('./db');
 
 var writeFile = function writeFile(path, callback) {
   if (!callback) {
@@ -28,7 +30,7 @@ var writeFile = function writeFile(path, callback) {
   return ws;
 };
 
-var resource = Peeq(config.mtURL, 60000);
+var resource = Peeq(config.remoteResource, 60000);
 
 resource.on('response', function(res) {
   var lastModified = new Date(res.headers['last-modified']);
@@ -98,16 +100,18 @@ resource.on('response', function(res) {
   htmlStream.pause();
   htmlStream.pipe(tr);
 
+  /*
   res
     .pipe(fs.createWriteStream(__dirname + '/assets/images/' + timeStamp + '.jpg'));
+   */
 
-  res
-    .pipe(new JPEGDecoder)
+  var jpegStream = res.pipe(new JPEGDecoder);
+
+  jpegStream
     .pipe(new JPEGEncoder({ quality: 70 }))
     .pipe(fs.createWriteStream(__dirname + '/assets/images/' + timeStamp + '--large.jpg'));
 
-  res
-    .pipe(new JPEGDecoder)
+  jpegStream
     .pipe(concat(processImages));
 });
 
