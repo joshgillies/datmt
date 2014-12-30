@@ -46,9 +46,9 @@ var processImages = function processImages(res) {
           return console.log(err);
 
         var dataURI = 'data:image/jpeg;base64,' + data.toString('base64');
-        db.images.put(info.filename + '--small!dataUri', dataURI);
+        db.images.put(info.name + '!dataUri', dataURI);
 
-        var s3obj = new AWS.S3({params: {Bucket: 'datmt-data-aus1', Key: info.name + '.jpg'}});
+        var s3obj = new AWS.S3({params: {Bucket: config.aws.s3.bucket, Key: info.name + '.jpg'}});
         s3obj.upload({ACL: 'public-read', Body: data})
           .send(function(err, data) {
             if (err) return console.log(err);
@@ -62,7 +62,7 @@ var processImages = function processImages(res) {
       .pipe(bl(function(err, data) {
         if (err)
           return console.log(err);
-        var s3obj = new AWS.S3({params: {Bucket: 'datmt-data-aus1', Key: info.name + '.jpg'}});
+        var s3obj = new AWS.S3({params: {Bucket: config.aws.s3.bucket, Key: info.name + '.jpg'}});
         s3obj.upload({ACL: 'public-read', Body: data})
           .send(function(err, data) {
             if (err) return console.log(err);
