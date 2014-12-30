@@ -1,5 +1,12 @@
-var level = require('level');
+var Level = require('level');
+var Sublevel = require('level-sublevel');
 
-var db = level('./db');
+var db = Sublevel(Level('./db'));
 
-module.exports = db;
+var logs = db.sublevel('logs');
+var images = db.sublevel('imgs');
+
+module.exports = {
+  logs: logs,
+  images: images
+};
