@@ -1,15 +1,15 @@
-# datmt (Mt. Wellington image feed)
+# datmt (Mt. Wellington imagery service)
 
 Mt. Wellington as a service.
 
 ## Description
 
-`datmt` makes use of http://www.rosebay.tased.edu.au/Camera.htm and as a
-result offers a near real-time view of Mt. Wellington.
+`datmt` makes use of http://www.rosebay.tased.edu.au/Camera.htm to produce a near
+real-time view of Mt. Wellington.
 
 By way of generating permalinks to snapshots of the mountatin `datmt` pays special
-attention to both social distributon and archival of various images of Hobarts gentle
-giant.
+attention to both social distributon and archival of the varying faces of Hobarts
+gentle giant.
 
 ## Status
 
