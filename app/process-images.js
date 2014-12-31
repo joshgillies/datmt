@@ -3,6 +3,7 @@ var JPEGDecoder = require('jpg-stream/decoder');
 var JPEGEncoder = require('jpg-stream/encoder');
 var PassThrough = require('readable-stream').PassThrough;
 var resize = require('resizer-stream');
+var after = require('after');
 var config = require('config');
 var AWS = !config.aws || require('./aws');
 var db = require('./db');
@@ -34,7 +35,14 @@ var createVariations = function createVariations(variations, data) {
 var processImages = function processImages(res) {
   var lastModified = new Date(res.headers['last-modified']);
   var timeStamp = lastModified.toISOString();
-  var jpegStream = res.pipe(new JPEGDecoder);
+  var updateIndex = function updateIndex(err) {
+    if (err) console.log(err);
+
+    db.images.put('index', timeStamp, function(err) {
+      if (err) console.log(err);
+    });
+  };
+  var next = after(2, updateIndex);
   var variations = {};
 
   variations[timeStamp + '--small'] = function createSmall(stream, info) {
@@ -52,7 +60,7 @@ var processImages = function processImages(res) {
         s3obj.upload({ACL: 'public-read', Body: data})
           .send(function(err, data) {
             if (err) return console.log(err);
-            db.images.put(info.name, data.Location);
+            db.images.put(info.name, data.Location, next);
           });
       }));
   };
@@ -66,10 +74,12 @@ var processImages = function processImages(res) {
         s3obj.upload({ACL: 'public-read', Body: data})
           .send(function(err, data) {
             if (err) return console.log(err);
-            db.images.put(info.name, data.Location);
+            db.images.put(info.name, data.Location, next);
           });
       }));
   };
+
+  var jpegStream = res.pipe(new JPEGDecoder);
 
   jpegStream
     .pipe(concat(function(frames) {

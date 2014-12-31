@@ -4,6 +4,7 @@
   "description": "Such Mountain",
   "main": "app/index.js",
   "dependencies": {
+    "after": "^0.8.1",
     "aws-sdk": "^2.1.4",
     "bl": "^0.9.3",
     "concat-frames": "^1.0.1",
