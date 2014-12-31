@@ -35,14 +35,7 @@ var createVariations = function createVariations(variations, data) {
 var processImages = function processImages(res) {
   var lastModified = new Date(res.headers['last-modified']);
   var timeStamp = lastModified.toISOString();
-  var updateIndex = function updateIndex(err) {
-    if (err) console.log(err);
-
-    db.images.put('index', timeStamp, function(err) {
-      if (err) console.log(err);
-    });
-  };
-  var next = after(2, updateIndex);
+  var next = after(2, db.images.updateIndex(timeStamp));
   var variations = {};
 
   variations[timeStamp + '--small'] = function createSmall(stream, info) {
