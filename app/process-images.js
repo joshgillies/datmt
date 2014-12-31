@@ -1,36 +1,39 @@
-var concat = require('concat-frames');
 var JPEGDecoder = require('jpg-stream/decoder');
 var JPEGEncoder = require('jpg-stream/encoder');
 var PassThrough = require('readable-stream').PassThrough;
 var resize = require('resizer-stream');
-var after = require('after');
+var concat = require('concat-frames');
 var config = require('config');
+var after = require('after');
 var AWS = !config.aws || require('./aws');
 var db = require('./db');
 var bl = require('bl');
 
-var createVariations = function createVariations(variations, data) {
-  var width = data.width;
-  var height = data.height;
-  var pixels = data.pixels;
+var createVariations = function createVariations(variations) {
+  return concat(function variationFromFrame(frames) {
+    var data = frames[0];
+    var width = data.width;
+    var height = data.height;
 
-  var imageStream = new PassThrough();
+    var imageStream = new PassThrough();
 
-  for (var variation in variations) {
-    variations[variation](imageStream, {
-      name: variation,
+    for (var variation in variations) {
+      variations[variation](imageStream, {
+        name: variation,
+        width: width,
+        height: height
+      });
+    }
+
+    imageStream.emit('format', {
       width: width,
-      height: height
+      height: height,
+      colorSpace: data.colorSpace
     });
-  }
-
-  imageStream.emit('format', {
-    width: width,
-    height: height,
-    colorSpace: data.colorSpace
+    imageStream.end(data.pixels);
   });
-  imageStream.end(pixels);
 };
+
 
 var processImages = function processImages(res) {
   var lastModified = new Date(res.headers['last-modified']);
@@ -72,12 +75,9 @@ var processImages = function processImages(res) {
       }));
   };
 
-  var jpegStream = res.pipe(new JPEGDecoder);
-
-  jpegStream
-    .pipe(concat(function(frames) {
-      createVariations(variations, frames[0]);
-    }));
+  res
+    .pipe(new JPEGDecoder)
+    .pipe(createVariations(variations));
 };
 
 module.exports = processImages;
