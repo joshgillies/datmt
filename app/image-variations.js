@@ -11,8 +11,8 @@ function complete(info) {
       return self.emit('error', err);
 
     var image = {
-      id: info.id,
-      name: info.name,
+      id: self.id,
+      name: self.id + '--' + info.type,
       body: data
     };
 
@@ -21,15 +21,20 @@ function complete(info) {
   });
 }
 
-var Variations = function Variations() {
-  if(!(this instanceof Variations)) return new Variations();
+var Variations = function Variations(id) {
+  if(!(this instanceof Variations)) return new Variations(id);
+
   EventEmitter.call(this);
+
+  this.id = id;
+
 };
 
 inherits(Variations, EventEmitter);
 
 Variations.prototype.toObject = function toObject() {
   var self = this;
+
   return {
     small: function createSmall(image) {
       image

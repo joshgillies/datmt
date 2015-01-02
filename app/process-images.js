@@ -14,11 +14,11 @@ resource.on('response', function processImageResponse(res) {
   var timeStamp = lastModified.toISOString();
 
   var next = after(2, db.images.updateIndex(timeStamp));
-  var images = imageVariations();
+  var images = imageVariations(timeStamp);
 
   res
     .pipe(new JPEGDecoder)
-    .pipe(createImages(images.toObject(), timeStamp));
+    .pipe(createImages(images.toObject()));
 
   images.on('small', function(image) {
     var dataURI = 'data:image/jpeg;base64,' + image.body.toString('base64');
