@@ -20,16 +20,19 @@
     "peeq": "^1.0.0",
     "rc": "^0.5.4",
     "readable-stream": "^1.0.33",
+    "redirector": "0.0.2",
     "resizer-stream": "^1.0.1",
+    "routes-router": "^4.1.2",
+    "send-data": "^3.3.3",
     "through2": "^0.6.3",
-    "trumpet": "^1.7.0"
+    "trumpet": "^1.7.0",
+    "virtual-dom-stringify": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run process-images",
-    "server": "node app/index.js",
-    "process-images": "node app/process-images.js"
+    "start": "npm run server",
+    "server": "node app/index.js"
   },
   "repository": {
     "type": "git",

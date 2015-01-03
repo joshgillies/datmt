@@ -38,3 +38,5 @@ resource.on('response', function processImageResponse(res) {
 resource.on('error', function(err) {
   console.log(err);
 });
+
+module.exports = resource;
