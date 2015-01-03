@@ -7,7 +7,7 @@ var layout = function layout(state) {
     ]),
     h('body', {
       'style': {
-        'background': state.dataURI,
+        'background': 'url(' + state.dataURI + ')',
         'background-size': 'cover',
         'margin': '0'
       }
