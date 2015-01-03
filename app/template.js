@@ -6,11 +6,17 @@ var layout = function layout(state) {
       h('title', 'Hello Mt. Wellington!')
     ]),
     h('body', {
-      'style': 'background:' + state.dataURI + ';background-size:cover;margin:0;'
+      'style': {
+        'background': state.dataURI,
+        'background-size': 'cover',
+        'margin': '0'
+      }
     }, [
       h('img', {
         'src': state.imageURI,
-        'style': 'width:100%;',
+        'style': {
+          'width': '100%'
+        },
         'alt': 'Mt. Wellington as seen at ' + state.timeStamp
       })
     ])
