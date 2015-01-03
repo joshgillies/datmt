@@ -18,7 +18,7 @@ resource.on('response', function processImageResponse(res) {
 
   res
     .pipe(new JPEGDecoder)
-    .pipe(createImages(images.toObject()));
+    .pipe(createImages(images.toJSON()));
 
   images.on('small', function(image) {
     var dataURI = 'data:image/jpeg;base64,' + image.body.toString('base64');

@@ -32,7 +32,7 @@ var Variations = function Variations(id) {
 
 inherits(Variations, EventEmitter);
 
-Variations.prototype.toObject = function toObject() {
+Variations.prototype.toJSON = function toJSON() {
   var self = this;
 
   return {
