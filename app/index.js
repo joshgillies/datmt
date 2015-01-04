@@ -1,8 +1,15 @@
+var processImages = require('./process-images');
 var server = require('./server');
 var config = require('config');
-var processImages = require('./process-images');
+var Peeq = require('peeq');
 
-processImages.on('error', function(err) {
+var resource = Peeq(config.remoteResource, 60000);
+
+resource.on('response', processImages(function(err) {
+  console.log(err);
+}));
+
+resource.on('error', function(err) {
   console.log(err);
 });
 
