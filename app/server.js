@@ -2,7 +2,6 @@ var http = require('http');
 var Router = require('routes-router');
 var sendHtml = require('send-data/html');
 var stringify = require('virtual-dom-stringify');
-var after = require('after');
 var db = require('./db');
 var ecstatic = require('ecstatic')({
   root: __dirname + '/assets',
@@ -12,40 +11,14 @@ var ecstatic = require('ecstatic')({
 
 var template = require('./template');
 
-var getLatest = function getLatest(req, res, callback) {
-  var state = {};
-  var next = after(3, function(err) {
-    callback(err, state);
-  });
-
-  db.images.get('index', function(err, index) {
-    state.timeStamp = (new Date(index)).toLocaleString();
-    next(err);
-
-    db.images.get(index + '--large', function getImageURI(err, value) {
-      state.imageURI = value;
-      next(err);
-    });
-
-    db.images.get(index + '--small!dataUri', function getDataURI(err, value) {
-      state.dataURI = value.toString();
-      next(err);
-    });
-    /*
-    db.images.createReadStream({ start: index, end: index + '\xff' })
-      .on('data', function (data) {
-        console.log(data.key, '=', data.value);
-      });
-     */
-  });
-};
-
 var app = Router();
 
-app.addRoute('/', function (req, res, opts, cb) {
-  getLatest(req, res, function (err, data) {
+app.addRoute('/', function indexRoute(req, res, opts, cb) {
+  db.images.getLatest(function imageData(err, data) {
     if (err)
       return cb(err);
+
+    data.timeStamp = (new Date(data.index)).toLocaleString();
 
     var vtree = template(data);
 
