@@ -35,7 +35,7 @@ var getImageData = images.getImageData = function getImageData(index, callback) 
     callback(err, data);
   });
   var getImageFromKey = function getImageFromKey(key) {
-    return getImage(keys[key], function getData(err, value) {
+    getImage(keys[key], function getData(err, value) {
       data[key] = value;
       next(err);
     });
@@ -47,9 +47,7 @@ var getImageData = images.getImageData = function getImageData(index, callback) 
 };
 
 var getLatest = images.getLatest = function getLatest(callback) {
-  getImage('index', function getIndex(err, index) {
-    getImageData(index, callback);
-  });
+  images.get('index', callback);
 };
 
 module.exports = {
