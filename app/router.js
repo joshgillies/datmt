@@ -8,7 +8,7 @@ var router = HttpHashRouter();
 var template = require('./template');
 
 var routes = {
-  '/': function indexRoute(req, res, next) {
+  '/': function indexRoute(req, res, opts, next) {
     db.images.getLatest(function redirectToImage(err, index) {
       if (err)
         return next(err);
@@ -16,7 +16,7 @@ var routes = {
       redirect(req, res, '/' + index);
     });
   },
-  '/:id': function imageRoute(req, res, opts) {
+  '/:id': function imageRoute(req, res, opts, next) {
     var imageData = function imageData(err, data) {
       if (err)
         return redirect(req, res, '/');
@@ -30,7 +30,7 @@ var routes = {
 
     db.images.getImageData(opts.params.id, imageData);
   },
-  '/archive': function archiveRoute(req, res) {
+  '/archive': function archiveRoute(req, res, opts, next) {
     res.end('The eventual archive of images.');
   }
 };
