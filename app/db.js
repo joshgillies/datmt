@@ -29,6 +29,7 @@ var getImageData = images.getImageData = function getImageData(index, callback) 
   };
   var keys = {
     imageURI: index + '--large',
+    imageURISmall: index + '--small',
     dataURI: index + '--small!dataUri'
   };
   var next = after(Object.keys(keys).length, function(err) {
