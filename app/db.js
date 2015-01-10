@@ -4,20 +4,8 @@ var after = require('after');
 
 var db = Sublevel(Level('./db'));
 
-var logs = db.sublevel('logs');
+var index = db.sublevel('index');
 var images = db.sublevel('imgs');
-
-var updateIndex = images.updateIndex = function updateIndex(index) {
-  return function update(err) {
-    if (err)
-      return console.log(err);
-    images.put('index', index, function(err) {
-      if (err)
-        return console.log(err);
-      console.log((new Date()).toLocaleString() + ': Index at ' + index);
-    });
-  };
-};
 
 var getImage = images.getImage = function getImage(key, callback) {
   images.get(key, callback);
@@ -47,11 +35,26 @@ var getImageData = images.getImageData = function getImageData(index, callback) 
   }
 };
 
-var getLatest = images.getLatest = function getLatest(callback) {
-  images.get('index', callback);
+var getLatest = index.getLatest = function getLatest(callback) {
+  index.get('HEAD', callback);
+};
+
+var updateIndex = index.updateIndex = function updateIndex(key) {
+  return function update(err) {
+    if (err)
+      return console.log(err);
+    index.batch([
+      { key: '' + Date.now(), value: key, type: 'put' },
+      { key: 'HEAD', value: key, type: 'put' }
+    ], function(err) {
+      if (err)
+        return console.log(err);
+      console.log((new Date()).toLocaleString() + ': Index at ' + key);
+    });
+  };
 };
 
 module.exports = {
-  logs: logs,
+  index: index,
   images: images
 };

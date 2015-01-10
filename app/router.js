@@ -10,7 +10,7 @@ var router = HttpHashRouter();
 var template = require('./template');
 
 var indexRoute = function indexRoute(req, res, opts, next) {
-  db.images.getLatest(function redirectToImage(err, index) {
+  db.index.getLatest(function redirectToImage(err, index) {
     if (err)
       return next(err);
 

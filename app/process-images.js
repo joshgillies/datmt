@@ -17,7 +17,7 @@ var processImages = function processIamges(callback) {
       return callback(new Error(lastModified + ' not a valid date. ' + err));
     }
 
-    var next = after(2, db.images.updateIndex(timeStamp));
+    var next = after(2, db.index.updateIndex(timeStamp));
     var images = imageVariations(timeStamp);
 
     res
