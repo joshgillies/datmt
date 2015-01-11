@@ -8,7 +8,7 @@ var mount = st({
   passthrough: true
 });
 
-module.exports = http.createServer(function(req, res) {
+module.exports = http.createServer(function server(req, res) {
   mount(req, res, function passThrough() {
     router(req, res, {}, function onError(err) {
       if (err) {
