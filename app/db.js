@@ -44,8 +44,8 @@ var updateIndex = index.updateIndex = function updateIndex(key) {
     if (err)
       return console.log(err);
     index.batch([
-      { key: '' + Date.now(), value: key, type: 'put' },
-      { key: 'HEAD', value: key, type: 'put' }
+      { type: 'put', key: '' + Date.now(), value: key },
+      { type: 'put', key: 'HEAD', value: key }
     ], function(err) {
       if (err)
         return console.log(err);

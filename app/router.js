@@ -27,7 +27,7 @@ var imageRoute = function imageRoute(req, res, opts, next) {
 
     mediaTypes({
       'text/html': function htmlResp(req, res) {
-        var vtree = template(data);
+        var vtree = template.layout(data);
 
         sendHtml(req, res, '<!DOCTYPE html>' + stringify(vtree));
       },
@@ -41,7 +41,27 @@ var imageRoute = function imageRoute(req, res, opts, next) {
 };
 
 var archiveRoute = function archiveRoute(req, res, opts, next) {
-  res.end('The eventual archive of images.');
+  var archive = {};
+  db.index.createReadStream({ reverse: true })
+    .on('data', function(data) {
+      var key = data.value;
+      db.images.getImageData(key, function(err, data) {
+        delete data.dataURI;
+        archive[key] = data;
+      });
+    })
+    .on('end', function() {
+      mediaTypes({
+        'text/html': function htmlResp(req, res) {
+          var vtree = template.archive(archive);
+
+          sendHtml(req, res, '<!DOCTYPE html>' + stringify(vtree));
+        },
+        'application/json': function jsonResp(req, res) {
+          sendJson(req, res, archive);
+        }
+      }).call(null, req, res, opts, next);
+    });
 };
 
 var routes = {
