@@ -3,20 +3,21 @@ var h = require('mercury').h;
 var layout = function layout(state) {
   return h('html', [
     h('head', [
-      h('title', 'Hello Mt. Wellington!')
+      h('title', 'Hello Mt. Wellington!'),
+      h('link', {
+        'href': '/css/style.css',
+        'rel': 'stylesheet',
+        'type': 'text/css'
+      })
     ]),
     h('body', {
       'style': {
-        'background': 'url(' + state.dataURI + ')',
-        'background-size': 'cover',
-        'margin': '0'
+        'background': 'url(' + state.dataURI + ')'
       }
     }, [
       h('img', {
+        'class': 'cover-image',
         'src': state.imageURI,
-        'style': {
-          'width': '100%'
-        },
         'alt': 'Mt. Wellington as seen at ' + state.timeStamp
       })
     ])
@@ -26,14 +27,17 @@ var layout = function layout(state) {
 var archive = function archive(state) {
   return h('html', [
     h('head', [
-      h('title', 'Hello Mt. Wellington!')
+      h('title', 'Hello Mt. Wellington!'),
+      h('link', {
+        'href': '/css/style.css',
+        'rel': 'stylesheet',
+        'type': 'text/css'
+      })
     ]),
     h('body', Object.keys(state).map(function(image) {
       return h('a', {
         'href': '/' + image,
-        'style': {
-          'float': 'left'
-        }
+        'class': 'image-grid'
       }, [
         h('img', {
           'src': state[image].imageURISmall,

@@ -1,0 +1,17 @@
+body {
+  background-size: cover;
+  margin: 0;
+}
+
+.cover-image {
+  width: 100%;
+}
+
+.image-grid {
+  float: left;
+  width: 25%;
+}
+
+.image-grid img {
+  width: 100%;
+}
