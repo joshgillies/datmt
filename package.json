@@ -31,6 +31,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "node app/getS3Objects.js",
     "start": "npm run server",
     "server": "node app/index.js"
   },
