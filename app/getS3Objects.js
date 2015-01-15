@@ -1,3 +1,4 @@
+var db = require('./db');
 var config = require('config');
 var AWS = !config.aws || require('./aws');
 
@@ -26,20 +27,21 @@ var getObjects = function getObjects(bucket, region, marker) {
     if (data.Contents.length)
       getObjects(bucket, region, data.Contents[data.Contents.length - 1].Key);
 
-    data.Contents.map(function createData(item) {
+    data.Contents.forEach(function createData(item) {
       if (/small/g.test(item.Key))
         getThumbnailData(bucket, item.Key);
-      console.log({
-        key: item.Key.replace('.jpg', ''),
-        value: 'https://' + bucket + '.s3-' + region + '.amazonaws.com/' + item.Key
-      });
-      return item;
-    }).map(function generateKey(item) {
+      db.images.put(
+        item.Key.replace('.jpg', ''),
+        'https://' + bucket + '.s3-' + region + '.amazonaws.com/' + item.Key
+      );
+    });
+
+    data.Contents.map(function generateKey(item) {
       return item.Key.replace(/--(small|large).jpg/g,'');
     }).filter(function unique(value, index, array) {
       return array.indexOf(value) === index;
     }).forEach(function writeIndex(key) {
-      console.log({ key: (new Date(key)).valueOf(), value: key });
+      db.index.put('' + (new Date(key)).valueOf(), key);
     });
   });
 };
@@ -53,9 +55,6 @@ var getThumbnailData = function getObjectDetails(bucket, key) {
     if (err)
       return console.log(err, err.stack);
 
-    console.log({
-      key: key + '!dataUri',
-      value: 'data:image/jpeg;base64,' + data.Body.toString('base64')
-    });
+    db.images.put(key + '!dataUri', 'data:image/jpeg;base64,' + data.Body.toString('base64'));
   });
 };
