@@ -12,7 +12,7 @@ var layout = function layout(state) {
     ]),
     h('body', {
       'style': {
-        'background': 'url(' + state.dataURI + ')'
+        'background-image': 'url(' + state.dataURI + ')'
       }
     }, [
       h('img', {
