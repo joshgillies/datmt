@@ -55,6 +55,6 @@ var getThumbnailData = function getObjectDetails(bucket, key) {
     if (err)
       return console.log(err, err.stack);
 
-    db.images.put(key + '!dataUri', 'data:image/jpeg;base64,' + data.Body.toString('base64'));
+    db.images.put(key.replace('.jpg', '!dataUri'), 'data:image/jpeg;base64,' + data.Body.toString('base64'));
   });
 };
