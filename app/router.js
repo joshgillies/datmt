@@ -44,17 +44,20 @@ var imageRoute = function imageRoute(req, res, opts, next) {
 
 var archiveRoute = function archiveRoute(req, res, opts, next) {
   var marker = (new Date(opts.params.marker)).valueOf() || Date.now();
-  var indexStream = db.index.createReadStream({
+  var select = {
     lte: marker,
     gte: marker - (24 * 60 * 60 * 1000),
     reverse: true
-  });
+  };
+  var indexStream = db.index.createValueStream(select);
 
   indexStream
     .pipe(through2.obj(function(index, enc, cb) {
-      db.images.getImageData(index.value, function getData(err, data) {
-        if (err)
-          return redirect(req, res, '/archive');
+      db.images.getImageData(index, function getData(err, data) {
+        if (err) {
+          console.log(err, index);
+          return cb();
+        }
 
         delete data.dataURI;
         cb(null, data);
