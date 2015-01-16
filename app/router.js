@@ -46,8 +46,7 @@ var archiveRoute = function archiveRoute(req, res, opts, next) {
   var marker = (new Date(opts.params.marker)).valueOf() || Date.now();
   var select = {
     lte: marker,
-    gte: marker - (24 * 60 * 60 * 1000),
-    reverse: true
+    gte: marker - (24 * 60 * 60 * 1000)
   };
   var indexStream = db.index.createValueStream(select);
 
@@ -64,6 +63,7 @@ var archiveRoute = function archiveRoute(req, res, opts, next) {
       });
     }))
     .pipe(concat(function respond(data) {
+      if (Array.isArray(data)) data.reverse();
       mediaTypes({
         'text/html': function htmlResp(req, res) {
           var vtree = template.archive(data);
