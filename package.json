@@ -8,6 +8,7 @@
     "aws-sdk": "^2.1.4",
     "bl": "^0.9.3",
     "concat-frames": "^1.0.1",
+    "concat-stream": "^1.4.7",
     "gif-stream": "^1.0.1",
     "glob-stream": "^3.1.18",
     "http-hash-router": "^1.0.0",

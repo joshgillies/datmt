@@ -1,4 +1,6 @@
 var db = require('./db');
+var concat = require('concat-stream');
+var through2 = require('through2');
 var redirect = require('redirecter');
 var sendJson = require('send-data/json');
 var sendHtml = require('send-data/html');
@@ -41,33 +43,42 @@ var imageRoute = function imageRoute(req, res, opts, next) {
 };
 
 var archiveRoute = function archiveRoute(req, res, opts, next) {
-  var archive = {};
-  db.index.createReadStream({ reverse: true })
-    .on('data', function(data) {
-      var key = data.value;
-      db.images.getImageData(key, function(err, data) {
+  var marker = (new Date(opts.params.marker)).valueOf() || Date.now();
+  var indexStream = db.index.createReadStream({
+    lte: marker,
+    gte: marker - (24 * 60 * 60 * 1000),
+    reverse: true
+  });
+
+  indexStream
+    .pipe(through2.obj(function(index, enc, cb) {
+      db.images.getImageData(index.value, function getData(err, data) {
+        if (err)
+          return redirect(req, res, '/archive');
+
         delete data.dataURI;
-        archive[key] = data;
+        cb(null, data);
       });
-    })
-    .on('end', function() {
+    }))
+    .pipe(concat(function respond(data) {
       mediaTypes({
         'text/html': function htmlResp(req, res) {
-          var vtree = template.archive(archive);
+          var vtree = template.archive(data);
 
           sendHtml(req, res, '<!DOCTYPE html>' + stringify(vtree));
         },
         'application/json': function jsonResp(req, res) {
-          sendJson(req, res, archive);
+          sendJson(req, res, data);
         }
       }).call(null, req, res, opts, next);
-    });
+    }));
 };
 
 var routes = {
   '/': indexRoute,
   '/:id': imageRoute,
-  '/archive': archiveRoute
+  '/archive': archiveRoute,
+  '/archive/:marker': archiveRoute
 };
 
 for (var route in routes) {

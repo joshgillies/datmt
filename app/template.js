@@ -34,14 +34,14 @@ var archive = function archive(state) {
         'type': 'text/css'
       })
     ]),
-    h('body', Object.keys(state).map(function(image) {
+    h('body', state.map(function(image) {
       return h('a', {
-        'href': '/' + image,
+        'href': '/' + image.index,
         'class': 'image-grid'
       }, [
         h('img', {
-          'src': state[image].imageURISmall,
-          'alt': 'Mt. Wellington as seen at ' + state[image].timeStamp
+          'src': image.imageURISmall,
+          'alt': 'Mt. Wellington as seen at ' + image.timeStamp
         })
       ]);
     })
