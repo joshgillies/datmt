@@ -41,7 +41,7 @@ var getImageData = images.getImageData = function getImageData(index, keys, call
 
 var getNext = index.getNext = function getNext(marker, callback) {
   var select = {
-    gte: marker,
+    gt: marker,
     limit: 1
   };
   index.createValueStream(select)
@@ -55,16 +55,37 @@ var getNext = index.getNext = function getNext(marker, callback) {
 
 var getPrevious = index.getPrevious = function getPrevious(marker, callback) {
   var select = {
-    lte: marker,
+    lt: marker,
+    reverse: true,
     limit: 1
   };
+  var hasValue = false;
+  var onData = function onData(value) {
+    hasValue = true;
+    callback(null, value);
+  };
+  var onError = function onError(err) {
+    callback(err);
+  };
+  var onEnd = function onEnd() {
+    if(!hasValue) {
+      index.createValueStream({
+        lt: Date.now(),
+        limit: 1
+      })
+        .on('data', onData)
+        .on('error', onError)
+        .on('end', function fail() {
+          if(!hasValue)
+            callback(new Error('No previous value found in the database!'));
+        });
+    }
+  };
+
   index.createValueStream(select)
-    .on('data', function onData(value) {
-      callback(null, value);
-    })
-    .on('error', function onError(err) {
-      callback(err);
-    });
+    .on('data', onData)
+    .on('error', onError)
+    .on('end', onEnd);
 };
 
 var getLatest = index.getLatest = function getLatest(callback) {
