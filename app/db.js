@@ -39,18 +39,43 @@ var getImageData = images.getImageData = function getImageData(index, keys, call
   }
 };
 
+var getNext = index.getNext = function getNext(marker, callback) {
+  var select = {
+    gte: marker,
+    limit: 1
+  };
+  index.createValueStream(select)
+    .on('data', function onData(value) {
+      callback(null, value);
+    })
+    .on('error', function onError(err) {
+      callback(err);
+    });
+};
+
+var getPrevious = index.getPrevious = function getPrevious(marker, callback) {
+  var select = {
+    lte: marker,
+    limit: 1
+  };
+  index.createValueStream(select)
+    .on('data', function onData(value) {
+      callback(null, value);
+    })
+    .on('error', function onError(err) {
+      callback(err);
+    });
+};
+
 var getLatest = index.getLatest = function getLatest(callback) {
-  index.get('HEAD', callback);
+  getPrevious(Date.now(), callback);
 };
 
 var updateIndex = index.updateIndex = function updateIndex(key) {
   return function update(err) {
     if (err)
       return console.log(err);
-    index.batch([
-      { type: 'put', key: '' + Date.now(), value: key },
-      { type: 'put', key: 'HEAD', value: key }
-    ], function(err) {
+    index.put('' + (new Date(key)).valueOf(), key, function(err) {
       if (err)
         return console.log(err);
       console.log((new Date()).toLocaleString() + ': Index at ' + key);
