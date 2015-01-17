@@ -11,11 +11,15 @@ var getImage = images.getImage = function getImage(key, callback) {
   images.get(key, callback);
 };
 
-var getImageData = images.getImageData = function getImageData(index, callback) {
+var getImageData = images.getImageData = function getImageData(index, keys, callback) {
+  if (typeof keys === 'function') {
+    callback = keys;
+    keys = undefined;
+  }
   var data = {
     index: index
   };
-  var keys = {
+  keys = keys || {
     imageURI: index + '--large',
     imageURISmall: index + '--small',
     dataURI: index + '--small!dataUri'

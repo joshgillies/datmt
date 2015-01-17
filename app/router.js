@@ -52,13 +52,15 @@ var archiveRoute = function archiveRoute(req, res, opts, next) {
 
   indexStream
     .pipe(through2.obj(function(index, enc, cb) {
-      db.images.getImageData(index, function getData(err, data) {
+      db.images.getImageData(index, {
+        imageURI: index + '--large',
+        imageURISmall: index + '--small'
+      }, function getData(err, data) {
         if (err) {
           console.log(err, index);
           return cb();
         }
 
-        delete data.dataURI;
         cb(null, data);
       });
     }))
