@@ -69,10 +69,8 @@ var getPrevious = index.getPrevious = function getPrevious(marker, callback) {
   };
   var onEnd = function onEnd() {
     if(!hasValue) {
-      index.createValueStream({
-        lt: Date.now(),
-        limit: 1
-      })
+      select.reverse = false;
+      index.createValueStream(select)
         .on('data', onData)
         .on('error', onError)
         .on('end', function fail() {
