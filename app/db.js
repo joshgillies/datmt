@@ -86,6 +86,30 @@ var getPrevious = index.getPrevious = function getPrevious(marker, callback) {
     .on('end', onEnd);
 };
 
+var getClosest = index.getClosest = function getClosest(marker, callback) {
+  var values = [];
+  var findClosest = function findClosest(values) {
+    return function closest(err) {
+      if (err)
+        return callback(err);
+
+      var match = values.reduce(function (prev, curr) {
+        return (Math.abs(curr - marker) < Math.abs(prev - marker) ? curr : prev);
+      });
+
+      callback(null, (new Date(match)).toISOString());
+    };
+  };
+  var next = after(2, findClosest(values));
+  var getValue = function getValue(err, value) {
+    values.push((new Date(value)).valueOf());
+    next(err);
+  };
+
+  getNext(marker, getValue);
+  getPrevious(marker, getValue);
+};
+
 var getLatest = index.getLatest = function getLatest(callback) {
   getPrevious(Date.now(), callback);
 };

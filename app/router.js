@@ -21,9 +21,14 @@ var indexRoute = function indexRoute(req, res, opts, next) {
 };
 
 var imageRoute = function imageRoute(req, res, opts, next) {
-  var imageData = function imageData(err, data) {
+  var findClosest = function findClosest(err, key) {
     if (err)
       return redirect(req, res, '/');
+    redirect(req, res, '/' + key);
+  };
+  var imageData = function imageData(err, data) {
+    if (err)
+      return db.index.getClosest((new Date(opts.params.id)).valueOf(), findClosest);
 
     data.timeStamp = (new Date(data.index)).toLocaleString();
 
