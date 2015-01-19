@@ -11,6 +11,28 @@ var HttpHashRouter = require('http-hash-router');
 var router = HttpHashRouter();
 var template = require('./template');
 
+var imageHtml = function imageHtml(data) {
+  var vtree = template.layout(data);
+
+  return '<!DOCTYPE html>' + stringify(vtree);
+};
+var archiveHtml = function archiveHtml(data) {
+  var vtree = template.archive(data);
+
+  return '<!DOCTYPE html>' + stringify(vtree);
+};
+
+var negotiateContent = function negotiateContent(html, json) {
+  return mediaTypes({
+    'text/html': function htmlResp(req, res) {
+      sendHtml(req, res, html);
+    },
+    'application/json': function jsonResp(req, res) {
+      sendJson(req, res, json);
+    }
+  });
+};
+
 var indexRoute = function indexRoute(req, res, opts, next) {
   db.index.getLatest(function redirectToImage(err, index) {
     if (err)
@@ -32,16 +54,7 @@ var imageRoute = function imageRoute(req, res, opts, next) {
 
     data.timeStamp = (new Date(data.index)).toLocaleString();
 
-    mediaTypes({
-      'text/html': function htmlResp(req, res) {
-        var vtree = template.layout(data);
-
-        sendHtml(req, res, '<!DOCTYPE html>' + stringify(vtree));
-      },
-      'application/json': function jsonResp(req, res) {
-        sendJson(req, res, data);
-      }
-    }).call(null, req, res, opts, next);
+    negotiateContent(imageHtml(data), data).call(null, req, res, opts, next);
   };
 
   db.images.getImageData(opts.params.id, imageData);
@@ -71,16 +84,7 @@ var archiveRoute = function archiveRoute(req, res, opts, next) {
     }))
     .pipe(concat(function respond(data) {
       if (Array.isArray(data)) data.reverse();
-      mediaTypes({
-        'text/html': function htmlResp(req, res) {
-          var vtree = template.archive(data);
-
-          sendHtml(req, res, '<!DOCTYPE html>' + stringify(vtree));
-        },
-        'application/json': function jsonResp(req, res) {
-          sendJson(req, res, data);
-        }
-      }).call(null, req, res, opts, next);
+      negotiateContent(archiveHtml(data), data).call(null, req, res, opts, next);
     }));
 };
 
