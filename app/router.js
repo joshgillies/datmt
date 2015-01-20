@@ -9,15 +9,17 @@ var mediaTypes = require('media-types');
 var HttpHashRouter = require('http-hash-router');
 
 var router = HttpHashRouter();
-var template = require('./template');
+
+var image = require('image/template');
+var archive = require('archive/template');
 
 var imageHtml = function imageHtml(data) {
-  var vtree = template.layout(data);
+  var vtree = image(data);
 
   return '<!DOCTYPE html>' + stringify(vtree);
 };
 var archiveHtml = function archiveHtml(data) {
-  var vtree = template.archive(data);
+  var vtree = archive(data);
 
   return '<!DOCTYPE html>' + stringify(vtree);
 };
