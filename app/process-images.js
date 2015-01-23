@@ -3,7 +3,7 @@ var createImages = require('create-images');
 var JPEGDecoder = require('jpg-stream/decoder');
 var config = require('config');
 var after = require('after');
-var AWS = !config.aws || require('./aws');
+var s3 = require('dal/s3').s3;
 var db = require('./db');
 
 var processImages = function processIamges(callback) {
@@ -29,13 +29,16 @@ var processImages = function processIamges(callback) {
       db.images.put(image.name + '!dataUri', dataURI, console.log);
     });
 
-    images.on('image', function(image) {
-      var s3obj = new AWS.S3({params: {Bucket: config.aws.s3.bucket, Key: image.name + '.jpg'}});
-      s3obj.upload({ACL: 'public-read', Body: image.body})
-        .send(function(err, data) {
-          if (err) return console.log(err);
-          db.images.put(image.name, data.Location, next);
-        });
+    images.on('image', function uploadData(image) {
+      s3.upload({
+        Bucket: config.aws.s3.bucket,
+        Key: image.name + '.jpg',
+        ACL: 'public-read',
+        Body: image.body
+      }, function writeData(err, data) {
+        if (err) return console.log(err);
+        db.images.put(image.name, data.Location, next);
+      });
     });
   };
 };
