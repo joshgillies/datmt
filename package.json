@@ -12,6 +12,7 @@
     "gif-stream": "^1.0.1",
     "glob-stream": "^3.1.18",
     "http-hash-router": "^1.0.0",
+    "hyperquest": "^1.0.1",
     "inherits": "^2.0.1",
     "jpg-stream": "^1.0.2",
     "level": "^0.18.0",
