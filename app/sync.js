@@ -1,34 +1,78 @@
 var config = require('config');
 var db = require('./db');
 
-if (config.syncUrl) {
+if (config.syncUri) {
+  var MAX_REQUESTS = 40; // science!
+  var currentRequests = 0;
   var hyperquest = require('hyperquest');
   var concat = require('concat-stream');
+  var Level = require('level');
 
   var getJson = function(uri, callback) {
     var req = hyperquest(uri);
+    req.setHeader('user-agent', 'MtSyncAgent/1.0');
     req.setHeader('accept', 'application/json');
-    return req;
+    req.on('response', function onResponse(res) {
+      if (res.statusCode === 200)
+        return res.pipe(concat(function toJSON(data) {
+          callback(null, JSON.parse(data.toString()));
+        }));
+
+      return callback(new Error('Resource Not Found'));
+    });
+    req.on('error', callback);
   };
 
-  getJson(config.syncUrl)
-    .pipe(concat(function(data) {
-      data = JSON.parse(data.toString());
-      Object.keys(data).forEach(function(key) {
-        getJson(config.serviceUrl + '/' + key)
-          .pipe(concat(function(data) {
-            var ops = [
-              { types: 'put', key: data.index + '--large', value: data.imageURI },
-              { types: 'put', key: data.index + '--small', value: data.imageURISmall },
-              { types: 'put', key: data.index + '--small!dataUri', value: data.dataURI }
-            ];
-            db.images.batch(ops, function(err) {
-              if (err) return console.log(err);
-              db.index.put('' + (new Date(data.index)).valueOf(), data.index);
-            });
-          }));
+  var tmp = Level('/tmp/' + Date.now());
+
+  var stream = tmp.createKeyStream();
+
+  stream.pause();
+
+  var getArchiveData = (function getArchiveData(syncUri) {
+    getJson(syncUri, function archiveData(err, json) {
+      if (err) {
+        stream.resume();
+        return console.log(err);
+      }
+
+      var keys = Object.keys(json);
+      var length = keys.length;
+
+      keys.forEach(function(key, index) {
+        if (length === (index + 1))
+          getArchiveData(config.syncUri + '/' + key[index]);
+        tmp.put(key, key, console.log);
       });
-    }));
+    });
+  })(config.syncUri);
+
+  stream.on('error', console.log);
+  stream.on('data', function getKeys(key) {
+    if (currentRequests === MAX_REQUESTS)
+      stream.pause();
+
+    currentRequests++;
+
+    getJson(config.serviceUri + '/' + key, function(err, data) {
+      if (err)
+        return console.log(config.serviceUri + '/' + key,err);
+      console.log(config.serviceUri + '/' + key);
+      db.images.batch([
+        { types: 'put', key: data.index + '--large', value: data.imageURI },
+        { types: 'put', key: data.index + '--small', value: data.imageURISmall },
+        { types: 'put', key: data.index + '--small!dataUri', value: data.dataURI }
+      ], function finish(err) {
+        if (err) return console.log(err);
+        db.index.put('' + (new Date(data.index)).valueOf(), data.index);
+
+        currentRequests--;
+
+        if (!currentRequests)
+          stream.resume();
+      });
+    });
+  });
 
 } else {
   var s3 = require('dal/s3');
